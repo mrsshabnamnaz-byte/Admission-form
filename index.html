@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admission Form</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#cbd5e1;--accent:#1d4ed8;--ok:#15803d;--err:#b91c1c}
+@media(prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--line:#475569;--accent:#3b82f6;--ok:#4ade80;--err:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:20px 12px}
+.card{max-width:760px;margin:0 auto;background:var(--card);border-radius:14px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+h1{margin:0 0 4px;font-size:26px;text-align:center}
+.sub{text-align:center;color:var(--muted);margin:0 0 24px}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--accent);color:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label{display:block;font-size:14px;margin-bottom:5px;font-weight:600}
+label span{color:var(--err)}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+button{margin-top:26px;width:100%;padding:13px;border:0;border-radius:10px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#msg{margin-top:16px;padding:12px;border-radius:8px;text-align:center;display:none;font-weight:600}
+#msg.ok{display:block;color:var(--ok);border:1px solid var(--ok)}
+#msg.err{display:block;color:var(--err);border:1px solid var(--err)}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Admission Form</h1>
+  <p class="sub">Please fill in all required fields (<span style="color:var(--err)">*</span>)</p>
+
+  <form id="f" novalidate>
+    <h2>Student Information</h2>
+    <div class="grid">
+      <div class="full"><label>Student Name <span>*</span></label><input name="Student Name" required></div>
+      <div><label>Father's Name <span>*</span></label><input name="Father Name" required></div>
+      <div><label>Mother's Name</label><input name="Mother Name"></div>
+      <div><label>Date of Birth <span>*</span></label><input type="date" name="Date of Birth" required></div>
+      <div><label>Gender <span>*</span></label>
+        <select name="Gender" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div><label>B-Form / CNIC No <span>*</span></label><input name="B-Form CNIC" placeholder="12345-1234567-1" required></div>
+      <div><label>Religion</label><input name="Religion"></div>
+    </div>
+
+    <h2>Admission Details</h2>
+    <div class="grid">
+      <div><label>Class Applying For <span>*</span></label>
+        <select name="Class" required><option value="">Select</option><option>Play Group</option><option>Nursery</option><option>Prep</option>
+        <option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option><option>Class 5</option>
+        <option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option>
+        <option>1st Year</option><option>2nd Year</option></select></div>
+      <div><label>Previous School</label><input name="Previous School"></div>
+      <div><label>Last Class Passed</label><input name="Last Class Passed"></div>
+      <div><label>Percentage / Grade</label><input name="Last Result"></div>
+    </div>
+
+    <h2>Parent / Guardian Information</h2>
+    <div class="grid">
+      <div><label>Guardian Name <span>*</span></label><input name="Guardian Name" required></div>
+      <div><label>Guardian CNIC</label><input name="Guardian CNIC"></div>
+      <div><label>Occupation</label><input name="Occupation"></div>
+      <div><label>Phone Number <span>*</span></label><input type="tel" name="Phone" required></div>
+      <div><label>WhatsApp Number</label><input type="tel" name="WhatsApp"></div>
+      <div><label>Email</label><input type="email" name="Email"></div>
+      <div class="full"><label>Home Address <span>*</span></label><textarea name="Address" rows="3" required></textarea></div>
+      <div class="full"><label>Additional Notes</label><textarea name="Notes" rows="2"></textarea></div>
+    </div>
+
+    <button type="submit" id="btn">Submit Application</button>
+    <div id="msg"></div>
+  </form>
+</div>
+
+<script>
+var URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxI50J_Hg4cqCyN1SRpWf1vHkEtz3FycD9QVc3sE58mvSWtNia0f6HaO_39vZL7_Hw/exec";
+var f = document.getElementById("f"), btn = document.getElementById("btn"), msg = document.getElementById("msg");
+
+function show(t, c){ msg.textContent = t; msg.className = c; }
+
+f.addEventListener("submit", function(e){
+  e.preventDefault();
+  msg.className = "";
+  if(!f.checkValidity()){ f.reportValidity(); return; }
+  btn.disabled = true; btn.textContent = "Submitting...";
+  var body = new URLSearchParams(new FormData(f));
+  fetch(URL_SCRIPT, { method:"POST", mode:"no-cors", body: body })
+    .then(function(){
+      show("Thank you! Your admission form has been submitted successfully.", "ok");
+      f.reset();
+    })
+    .catch(function(){
+      show("Submission failed. Please check your internet and try again.", "err");
+    })
+    .finally(function(){ btn.disabled = false; btn.textContent = "Submit Application"; });
+});
+</script>
+</body>
+</html>
